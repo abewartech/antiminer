@@ -3,14 +3,14 @@ mod heuristics;
 mod remediation;
 
 use config::Config;
-use heuristics::{check_process, hash_binary, DetectionResult};
+use heuristics::{check_process, hash_binary};
 use remediation::{kill_process, sanitize_binary, block_network};
 
-use sysinfo::{System, SystemExt, ProcessExt};
+use sysinfo::System;
 use procfs::process::Process;
 use std::{thread, time::Duration};
 use log::{info, warn, error};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use notify::{Watcher, RecursiveMode, Result};
 
@@ -102,7 +102,7 @@ fn run_watcher(config: Arc<Config>) -> Result<()> {
     Ok(())
 }
 
-fn perform_mitigation(pid: i32, proc_obj: &Process, score: u8, history: &Arc<Mutex<HashMap<String, u64>>>) {
+fn perform_mitigation(pid: i32, proc_obj: &Process, _score: u8, history: &Arc<Mutex<HashMap<String, u64>>>) {
     // 1. Calculate Hash (if possible before kill, or try to readexe)
     let binary_hash = if let Ok(exe) = proc_obj.exe() {
         hash_binary(&exe)

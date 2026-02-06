@@ -3,7 +3,7 @@ use std::path::Path;
 use std::fs;
 use procfs::process::Process;
 use std::net::IpAddr;
-use log::{info, warn, error};
+use log::{info, warn};
 
 pub fn kill_process(pid: i32) {
     info!("KILLING process {}", pid);
