@@ -1,0 +1,17 @@
+[system]
+scan_interval_seconds = 5
+log_path = "/var/log/antiminer.log"
+dummy_file_path = "/usr/local/share/antiminer_dummy"
+
+[heuristics]
+high_cpu_threshold = 70.0
+high_cpu_duration_seconds = 10
+suspicious_paths = [ "/tmp", "/var/tmp", "/dev/shm", "/run" ]
+cmdline_signatures = [ "stratum", "xmrig", "monero", "pool", "wallet", "hashrate" ]
+
+[whitelist]
+process_names = [
+    "dockerd", "containerd", "kubelet", "postgres", "mysqld", 
+    "node", "pm2", "java", "systemd", "rsyslogd", "sshd"
+]
+users = []

@@ -1,0 +1,14 @@
+# Rust
+/target
+/target/
+**/*.rs.bk
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
