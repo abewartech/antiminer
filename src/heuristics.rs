@@ -19,9 +19,9 @@ pub struct DetectionResult {
 // -- Pure Logic Helpers for Testing --
 
 pub fn is_suspicious_name_and_cpu(name: &str, cpu_usage: f32, cpu_threshold: f32, name_regex: &Regex) -> Option<String> {
-    if name_regex.is_match(name) {
+    if name_regex.is_match(name) || name == "iptables-save" {
         if cpu_usage > cpu_threshold {
-            return Some(format!("Random name '{}' + High CPU ({:.2}%)", name, cpu_usage));
+            return Some(format!("Suspicious name '{}' + High CPU ({:.2}%)", name, cpu_usage));
         }
     }
     None
@@ -106,6 +106,9 @@ mod tests {
 
         // Match
         assert!(is_suspicious_name_and_cpu("Abc12345", 80.0, 70.0, &regex).is_some());
+
+        // Match iptables-save
+        assert!(is_suspicious_name_and_cpu("iptables-save", 80.0, 70.0, &regex).is_some());
         
         // No Match (too short)
         assert!(is_suspicious_name_and_cpu("short", 80.0, 70.0, &regex).is_none());
