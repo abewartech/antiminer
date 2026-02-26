@@ -4,7 +4,7 @@ mod remediation;
 
 use config::Config;
 use heuristics::{check_process, hash_binary};
-use remediation::{kill_process, sanitize_binary, block_network};
+use remediation::{kill_process, sanitize_binary};
 
 use sysinfo::System;
 use procfs::process::Process;
@@ -112,15 +112,6 @@ fn perform_mitigation(pid: i32, proc_obj: &Process, _score: u8, history: &Arc<Mu
 
     // 2. Kill
     kill_process(pid);
-
-    // 3. Block Network
-    // We should have grabbed IPs before killing, but often blocking after is fine if persistent
-    // Actually, block logic was implemented to read from /proc/pid/net before kill in ideal world.
-    // Let's call block_network BEFORE kill in real flow? No, requirements: "Response Action: Kill -> Resolve -> Hapus -> ..." 
-    // BUT "Network Blocking: Parse /proc/pid/net". If we kill first, /proc/pid is gone.
-    // So we must parse BEFORE kill.
-    // In this function, proc_obj is still valid handle but if process dead, files gone.
-    block_network(pid); // Hopefully race condition is in our favor or we do it earlier.
 
     // 4. Sanitize
     if let Ok(exe) = proc_obj.exe() {

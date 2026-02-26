@@ -1,8 +1,7 @@
 use std::process::Command;
 use std::path::Path;
 use std::fs;
-use procfs::process::Process;
-use std::net::IpAddr;
+
 use log::{info, warn};
 
 pub fn kill_process(pid: i32) {
@@ -41,59 +40,3 @@ pub fn sanitize_binary(path: &Path) {
 
 use std::fs::File;
 
-pub fn block_network(pid: i32) {
-    // Attempt to parse /proc/pid/net/tcp or udp to find foreign IPs
-    // This is complex to do robustly in simple rust without a robust netstat parser, 
-    // but we can look for ESTABLISHED connections.
-    
-    // For this implementation, we will use a simplified approach or placeholder 
-    // because parsing /proc/net/tcp manually is verbose. 
-    // However, the requirement is "Parse /proc/<pid>/net/tcp & udp, Ambil IP tujuan, Block via iptables"
-    
-    // We will read the file manually.
-    if let Ok(p) = Process::new(pid) {
-        if let Ok(tcp) = p.tcp() {
-            for entry in tcp {
-                // If checking foreign address
-                 let remote_ip = entry.remote_address.ip();
-                 if !is_whitelisted_ip(&remote_ip) {
-                      add_iptables_drop(&remote_ip);
-                 }
-            }
-        }
-        if let Ok(udp) = p.udp() {
-            for entry in udp {
-                 let remote_ip = entry.remote_address.ip();
-                 if !is_whitelisted_ip(&remote_ip) {
-                      add_iptables_drop(&remote_ip);
-                 }
-            }
-        }
-    }
-}
-
-fn is_whitelisted_ip(ip: &IpAddr) -> bool {
-    // Localhost, private networks, etc.
-    // simplistic check
-    match ip {
-        IpAddr::V4(ipv4) => {
-            ipv4.is_loopback() || ipv4.is_private()
-        },
-        IpAddr::V6(ipv6) => {
-            ipv6.is_loopback()
-        }
-    }
-}
-
-fn add_iptables_drop(ip: &IpAddr) {
-    let ip_str = ip.to_string();
-    info!("BLOCKING IP: {}", ip_str);
-    let _ = Command::new("iptables")
-        .arg("-A")
-        .arg("OUTPUT")
-        .arg("-d")
-        .arg(&ip_str)
-        .arg("-j")
-        .arg("DROP")
-        .output();
-}

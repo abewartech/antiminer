@@ -121,5 +121,3 @@ To verify the system is working without waiting for a real attack:
     *   Check logs for the `comm` (command name).
     *   Add that name to `whitelist.process_names` in `/etc/antiminer.toml`.
     *   Run `systemctl restart antiminer`.
-*   **Network Blocking**:
-    *   Check blocked IPs: `iptables -L OUTPUT -n`

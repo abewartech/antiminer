@@ -49,8 +49,7 @@ When a miner is detected:
     *   File is deleted.
     *   Replaced with empty dummy file.
     *   `chattr +i` (Immutable bit) set to prevent overwrite.
-3.  **Network Freeze**:
-    *   Foreign IPs connected to the process are added to `iptables` DROP.
+
 
 ## ⚠️ Notes & Bypass Mitigations
 
