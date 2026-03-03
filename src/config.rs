@@ -1,6 +1,6 @@
 use serde_derive::Deserialize;
-use std::fs;
 use std::collections::HashSet;
+use std::fs;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Config {
@@ -22,6 +22,14 @@ pub struct HeuristicsConfig {
     pub high_cpu_duration_seconds: u64,
     pub suspicious_paths: Vec<String>,
     pub cmdline_signatures: Vec<String>,
+    #[serde(default)]
+    pub enforce_geoip: bool,
+    #[serde(default = "default_cidr_path")]
+    pub geoip_cidr_path: String,
+}
+
+fn default_cidr_path() -> String {
+    "/etc/antiminer_id.cidr".to_string()
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -61,6 +69,8 @@ impl Config {
                     "wallet".to_string(),
                     "hashrate".to_string(),
                 ],
+                enforce_geoip: true,
+                geoip_cidr_path: default_cidr_path(),
             },
             whitelist: WhitelistConfig {
                 process_names: HashSet::from([
@@ -89,7 +99,10 @@ mod tests {
     fn test_default_config() {
         let config = Config::default();
         assert_eq!(config.system.scan_interval_seconds, 5);
-        assert!(config.heuristics.suspicious_paths.contains(&"/tmp".to_string()));
+        assert!(config
+            .heuristics
+            .suspicious_paths
+            .contains(&"/tmp".to_string()));
         assert!(config.whitelist.process_names.contains("dockerd"));
     }
 
@@ -112,12 +125,14 @@ mod tests {
             high_cpu_duration_seconds = 5
             suspicious_paths = ["/opt/malware"]
             cmdline_signatures = ["miner"]
+            enforce_geoip = true
+            geoip_cidr_path = "/etc/test.cidr"
 
             [whitelist]
             process_names = ["good_app"]
             users = ["admin"]
         "#;
-        
+
         let config: Config = toml::from_str(toml_str).expect("Should parse valid TOML");
         assert_eq!(config.system.scan_interval_seconds, 10);
         assert_eq!(config.heuristics.high_cpu_threshold, 90.0);

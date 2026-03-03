@@ -1,16 +1,13 @@
-use std::process::Command;
-use std::path::Path;
 use std::fs;
+use std::path::Path;
+use std::process::Command;
 
 use log::{info, warn};
 
 pub fn kill_process(pid: i32) {
     info!("KILLING process {}", pid);
     // Use kill -9 via Command for reliability
-    let _ = Command::new("kill")
-        .arg("-9")
-        .arg(pid.to_string())
-        .output();
+    let _ = Command::new("kill").arg("-9").arg(pid.to_string()).output();
 }
 
 pub fn sanitize_binary(path: &Path) {
@@ -32,11 +29,7 @@ pub fn sanitize_binary(path: &Path) {
     }
 
     // 3. chattr +i
-    let _ = Command::new("chattr")
-        .arg("+i")
-        .arg(path_str)
-        .output();
+    let _ = Command::new("chattr").arg("+i").arg(path_str).output();
 }
 
 use std::fs::File;
-

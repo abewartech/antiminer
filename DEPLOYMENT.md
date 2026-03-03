@@ -16,7 +16,6 @@ On your **clean build machine**:
     ```bash
     cd antiminer
     ```
-
 2.  **Build Release Binary**:
     ```bash
     cargo build --release
@@ -28,6 +27,7 @@ On your **clean build machine**:
         *   `target/release/antiminer` (The binary)
         *   `antiminer.toml` (Configuration)
         *   `antiminer.service` (Service definition)
+        *   `id.cidr` (List of allowed Indonesian IPs for GeoIP checking)
 
 ## 📦 Step 2: Installation on Target Server
 
@@ -52,11 +52,13 @@ On your **clean build machine**:
     ```bash
     mkdir -p /etc/antiminer
     cp antiminer.toml /etc/antiminer.toml
+    cp id.cidr /etc/antiminer_id.cidr
     
-    # Secure the config file (read-only for root)
+    # Secure the config files
     chmod 600 /etc/antiminer.toml
+    chmod 644 /etc/antiminer_id.cidr
     ```
-    *   *Edit `/etc/antiminer.toml` now if you need to whitelist specific processes.*
+    *   *Edit `/etc/antiminer.toml` now if you need to whitelist specific processes or adjust the config.*
 
 4.  **Install Systemd Service**:
     ```bash
